@@ -18,6 +18,6 @@ public class MathServiceTest {
     public void multipliesNumbers() {
         int result = mathService.multiply(2, 4);
 
-        assertThat(result, equalTo(9));
+        assertThat(result, equalTo(8));
     }
 }
