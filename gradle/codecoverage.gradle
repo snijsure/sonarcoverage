@@ -1,13 +1,24 @@
 apply {
     plugin("jacoco")
     plugin("org.sonarqube")
-    plugin("jacoco-android")
+    //plugin("jacoco-android")
 }
 
-jacocoAndroidUnitTestReport {
-    csv.enabled false
-    html.enabled true
-    xml.enabled true
+task codeCoverageReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+    classDirectories = fileTree( dir: 'build/intermediates/classes/staging/debug/com/sonarcoverage')
+    sourceDirectories = files('src/main/java/sonarcoverage')
+    executionData = files('build/jacoco/testDebugUnitTest.exec')
+}
+
+task getCoverage(type: Exec, dependsOn: 'codeCoverageReport') {
+    group = "Reporting"
+    commandLine "open", "$buildDir/reports/coverage/debug/com.snijsure.sonarcoverage/index.html"
 }
 
 task sonarQubeTestReport(type: JacocoReport, dependsOn: [ "testDebugUnitTest"] ) {
@@ -41,12 +52,28 @@ task sonarQubeTestReport(type: JacocoReport, dependsOn: [ "testDebugUnitTest"] )
     executionData = fileTree(dir: project.projectDir, includes:
             ['**/*.exec', '**/*.ec'])
 }
+task myjacocoTestReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
+}
 
 sonarqube {
     properties {
         property 'sonar.host.url', 'http://localhost:9000'
         property "sonar.java.coveragePlugin", "jacoco"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/coverage/debug/report.xml"
+        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/testDebugUnitTest.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/coverage/debug/report.xml, ${project.buildDir}/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml, ${project.buildDir}/app/build/reports/jacoco/myjacocoTestReport/myjacocoTestReport.xml"
         property "sonar.verbose", "true"
     }
 }
