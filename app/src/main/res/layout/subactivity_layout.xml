@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/subactivity_text"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"
+        android:text="SubActivity Text" />
+
+    <Button
+        android:id="@+id/subactivity_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sub Activity Click" />
+
+    <Button
+        android:id="@+id/subactivity_hide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Don't Click Me!" />
+
+</LinearLayout>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Coverage</string>
+    <string name="subactivity_text">This is SubActivity</string>
+    <string name="mainactivity">Welcome to SonarQube Code Coverage</string>
+</resources>
