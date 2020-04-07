@@ -1,7 +1,41 @@
 apply {
     plugin("jacoco")
     plugin("org.sonarqube")
-    //plugin("jacoco-android")
+    plugin("jacoco-android")
+}
+
+jacoco {
+    reportsDir = file("${buildDir}/reports")
+}
+
+jacocoAndroidUnitTestReport {
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
+}
+
+task coverageReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports"
+
+    def coverageSourceDirs = ['src/main/java']
+
+    classDirectories = fileTree(
+            dir: "${buildDir}/intermediates/classes/debug",
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*',
+                       'com/android/**/*.class']
+    )
+
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
 task codeCoverageReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
@@ -52,28 +86,13 @@ task sonarQubeTestReport(type: JacocoReport, dependsOn: [ "testDebugUnitTest"] )
     executionData = fileTree(dir: project.projectDir, includes:
             ['**/*.exec', '**/*.ec'])
 }
-task myjacocoTestReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-
-    sourceDirectories = files([mainSrc])
-    classDirectories = files([debugTree])
-    executionData = files("${buildDir}/jacoco/testDebugUnitTest.exec")
-}
 
 sonarqube {
     properties {
         property 'sonar.host.url', 'http://localhost:9000'
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/testDebugUnitTest.exec"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/coverage/debug/report.xml, ${project.buildDir}/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml, ${project.buildDir}/app/build/reports/jacoco/myjacocoTestReport/myjacocoTestReport.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/coverage/debug/report.xml, ${project.buildDir}/reports/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
         property "sonar.verbose", "true"
     }
 }

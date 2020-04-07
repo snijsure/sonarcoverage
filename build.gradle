@@ -21,13 +21,6 @@ plugins {
     id 'jacoco'
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled true
-    }
-}
-
 allprojects {
     repositories {
         google()
