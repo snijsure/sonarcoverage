@@ -91,7 +91,6 @@ sonarqube {
     properties {
         property 'sonar.host.url', 'http://localhost:9000'
         property "sonar.java.coveragePlugin", "jacoco"
-        property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/testDebugUnitTest.exec"
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/coverage/debug/report.xml, ${project.buildDir}/reports/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
         property "sonar.verbose", "true"
     }
