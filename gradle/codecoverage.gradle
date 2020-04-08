@@ -38,55 +38,6 @@ task coverageReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
     }
 }
 
-task codeCoverageReport(type: JacocoReport, dependsOn: 'testDebugUnitTest') {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports after running tests."
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-    classDirectories = fileTree( dir: 'build/intermediates/classes/staging/debug/com/sonarcoverage')
-    sourceDirectories = files('src/main/java/sonarcoverage')
-    executionData = files('build/jacoco/testDebugUnitTest.exec')
-}
-
-task getCoverage(type: Exec, dependsOn: 'codeCoverageReport') {
-    group = "Reporting"
-    commandLine "open", "$buildDir/reports/coverage/debug/com.snijsure.sonarcoverage/index.html"
-}
-
-task sonarQubeTestReport(type: JacocoReport, dependsOn: [ "testDebugUnitTest"] ) {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports"
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-    def fileFilter = ['**/R.class',
-                      '**/R$*.class',
-                      '**/BuildConfig.*',
-                      '**/Manifest*.*',
-                      'android/**/*.*',
-                      '**/Lambda$*.class', //Retrolambda
-                      '**/Lambda.class',
-                      '**/*Lambda.class',
-                      '**/*Lambda*.class',
-                      '**/*Lambda*.*',
-                      '**/*Builder.*',
-                      '**/*_MembersInjector.class', //Dagger2 generated code
-                      '**/*_MembersInjector*.*', //Dagger2 generated code
-                      '**/*_*Factory*.*', //Dagger2 generated code
-                      '**/*Component*.*', //Dagger2 generated code
-                      '**/*Module*.*' //Dagger2 generated code
-    ]
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-    sourceDirectories = files([mainSrc])
-    classDirectories = files([debugTree])
-    executionData = fileTree(dir: project.projectDir, includes:
-            ['**/*.exec', '**/*.ec'])
-}
-
 sonarqube {
     properties {
         property 'sonar.host.url', 'http://localhost:9000'
